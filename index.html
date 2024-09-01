@@ -5,6 +5,11 @@
     <meta charset="UTF-8">
     <title>AI Image Generator</title>
     <style>
+        html {
+            height: 100%;
+            width: 100%;
+        }
+
         #search-form {
             margin: 20px;
             text-align: center;
@@ -24,6 +29,11 @@
             color: white;
             border: none;
             cursor: pointer;
+        }
+
+        #search-button:disabled {
+            background-color: #cccccc; /* Change color when disabled */
+            cursor: not-allowed; /* Change cursor to indicate disabled state */
         }
 
         #image-container {
@@ -48,57 +58,65 @@
 <body>
     <center>
         <h1>AI Image Generator</h1>
-        <p>The generator will take around one minute to generate nine images.<br>The images will be of a high quality (1024x1024) pixels</p>
+        <p>The generator will take around one minute to generate nine images.
+            <br>The images will be of high quality (1024x1024 pixels)</p>
         <a href="https://craiyon.ajaysinghusesgi.repl.co">API Link</a>
     </center>
 
     <div id="search-form">
-        <input 
-            onkeydown="if (event.keyCode == 13) document.getElementById('search-button').click()"    
+        <input onkeydown="if (event.keyCode == 13) document.getElementById('search-button').click()"
             id="search-input" type="text" placeholder="Enter a prompt...">
-        <button id="search-button" type="button" onclick="searchImages()">Search</button>
+        <button id="search-button" type="button" onclick="searchImages()">Generate</button>
     </div>
     <div id="image-container"></div>
     <script>
         function searchImages() {
-            const prompt = document.getElementById('search-input').value.trim();
+            const imageContainer1 = document.getElementById('image-container');
+            imageContainer1.innerHTML = '';
 
-            if (!prompt) {
+            const prompt = document.getElementById('search-input').value.trim(); // Trim whitespace
+            if (!prompt) { // Check if the prompt is empty
                 alert("Please enter a prompt.");
-                return;
+                return; // Exit the function early
             }
 
-            const imageContainer = document.getElementById('image-container');
-            imageContainer.innerHTML = '';
+            const searchButton = document.getElementById('search-button');
+            searchButton.disabled = true; // Disable the button
 
-            for (let a = 1; a <= 9; a++) {
+            // Show loading GIFs while waiting for the API response
+            for (var a = 1; a <= 9; a++) {
                 const imageWrapper = document.createElement('div');
                 imageWrapper.classList.add('image');
                 const img = document.createElement('img');
                 img.src = "https://media.tenor.com/G7LfW0O5qb8AAAAi/loading-gif.gif";
-                img.alt = "Loading...";
                 imageWrapper.appendChild(img);
-                imageContainer.appendChild(imageWrapper);
+                imageContainer1.appendChild(imageWrapper);
             }
 
-            fetch(`https://craiyon.AjaySinghUsesGi.repl.co/api?prompt=${encodeURIComponent(prompt)}`)
+            const encodedPrompt = encodeURIComponent(prompt); // Encode the prompt
+
+            fetch(`https://craiyon.AjaySinghUsesGi.repl.co/api?prompt=${encodedPrompt}`)
                 .then(response => response.json())
                 .then(data => {
                     const images = data.images.map(image => `${image}`);
+                    const imageContainer = document.getElementById('image-container');
                     imageContainer.innerHTML = '';
                     images.forEach(image => {
+                        console.log("image - " + image);
                         const imageWrapper = document.createElement('div');
                         imageWrapper.classList.add('image');
                         const img = document.createElement('img');
                         img.src = image;
-                        img.alt = prompt;
                         imageWrapper.appendChild(img);
                         imageContainer.appendChild(imageWrapper);
                     });
                 })
                 .catch(error => {
                     console.error(error);
-                    imageContainer.innerHTML = '<p>Error loading images. Please try again later.</p>';
+                    alert(error.toString());
+                })
+                .finally(() => {
+                    searchButton.disabled = false; // Enable the button again
                 });
         }
     </script>
