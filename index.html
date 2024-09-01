@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>AI Image Generator</title>
+    <style>
+        #search-form {
+            margin: 20px;
+            text-align: center;
+        }
+
+        #search-input {
+            padding: 5px;
+            font-size: 16px;
+            width: 300px;
+            margin-right: 10px;
+        }
+
+        #search-button {
+            padding: 5px 10px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #image-container {
+            margin: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .image {
+            margin: 10px;
+        }
+
+        .image img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<body>
+    <center>
+        <h1>AI Image Generator</h1>
+        <p>The generator will take around one minute to generate nine images.<br>The images will be of a high quality (1024x1024) pixels</p>
+        <a href="https://craiyon.ajaysinghusesgi.repl.co">API Link</a>
+    </center>
+
+    <div id="search-form">
+        <input 
+            onkeydown="if (event.keyCode == 13) document.getElementById('search-button').click()"    
+            id="search-input" type="text" placeholder="Enter a prompt...">
+        <button id="search-button" type="button" onclick="searchImages()">Search</button>
+    </div>
+    <div id="image-container"></div>
+    <script>
+        function searchImages() {
+            const prompt = document.getElementById('search-input').value.trim();
+
+            if (!prompt) {
+                alert("Please enter a prompt.");
+                return;
+            }
+
+            const imageContainer = document.getElementById('image-container');
+            imageContainer.innerHTML = '';
+
+            for (let a = 1; a <= 9; a++) {
+                const imageWrapper = document.createElement('div');
+                imageWrapper.classList.add('image');
+                const img = document.createElement('img');
+                img.src = "https://media.tenor.com/G7LfW0O5qb8AAAAi/loading-gif.gif";
+                img.alt = "Loading...";
+                imageWrapper.appendChild(img);
+                imageContainer.appendChild(imageWrapper);
+            }
+
+            fetch(`https://craiyon.AjaySinghUsesGi.repl.co/api?prompt=${encodeURIComponent(prompt)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const images = data.images.map(image => `${image}`);
+                    imageContainer.innerHTML = '';
+                    images.forEach(image => {
+                        const imageWrapper = document.createElement('div');
+                        imageWrapper.classList.add('image');
+                        const img = document.createElement('img');
+                        img.src = image;
+                        img.alt = prompt;
+                        imageWrapper.appendChild(img);
+                        imageContainer.appendChild(imageWrapper);
+                    });
+                })
+                .catch(error => {
+                    console.error(error);
+                    imageContainer.innerHTML = '<p>Error loading images. Please try again later.</p>';
+                });
+        }
+    </script>
+</body>
+
+</html>
