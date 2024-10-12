@@ -1,12 +1,12 @@
 # AI Image Generator
 
-This is a simple AI Image Generator that fetches images based on user prompts using a public API.
+This is a simple AI Image Generator that fetches a single high-quality image based on user prompts using a public API.
 
 ## Features
 
-- Generates nine high-quality images (1024x1024 pixels) based on the user's text prompt.
-- Uses an external API to generate images dynamically.
-- Displays a loading animation while images are being generated.
+- Generates a high-quality image (1024x1024 pixels) based on the user's text prompt.
+- Uses an external API to dynamically generate an image.
+- Displays a loading animation while the image is being generated.
 
 ## Live Demo
 
@@ -17,7 +17,7 @@ You can view the live demo [here](https://abhrankan-chakrabarti.github.io/AI-Ima
 1. Enter a prompt in the input field on the website.
 2. Click the "Search" button or press Enter.
 3. Wait for the images to load (this may take around a minute).
-4. View and download the generated images.
+4. View and download the generated image.
 
 ## Installation
 
