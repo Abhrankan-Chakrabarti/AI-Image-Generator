@@ -32,8 +32,8 @@
         }
 
         #search-button:disabled {
-            background-color: #cccccc; /* Change color when disabled */
-            cursor: not-allowed; /* Change cursor to indicate disabled state */
+            background-color: #cccccc;
+            cursor: not-allowed;
         }
 
         #image-container {
@@ -58,61 +58,55 @@
 <body>
     <center>
         <h1>AI Image Generator</h1>
-        <p>The generator will take around one minute to generate nine images.
+        <p>The generator will take around one minute to generate an image.
             <br>The images will be of high quality (1024x1024 pixels)</p>
     </center>
 
     <div id="search-form">
-        <input onkeydown="if (event.keyCode == 13) document.getElementById('search-button').click()"
-            id="search-input" type="text" placeholder="Enter a prompt...">
+        <input onkeydown="if (event.keyCode == 13) document.getElementById('search-button').click()" id="search-input"
+            type="text" placeholder="Enter a prompt...">
         <button id="search-button" type="button" onclick="searchImages()">Generate</button>
     </div>
     <div id="image-container"></div>
+
     <script>
         function searchImages() {
-            const imageContainer1 = document.getElementById('image-container');
-            imageContainer1.innerHTML = '';
+            const imageContainer = document.getElementById('image-container');
+            imageContainer.innerHTML = '';
 
-            const prompt = document.getElementById('search-input').value.trim(); // Trim whitespace
-            if (!prompt) { // Check if the prompt is empty
+            const prompt = document.getElementById('search-input').value.trim();
+            if (!prompt) {
                 alert("Please enter a prompt.");
-                return; // Exit the function early
+                return;
             }
 
             const searchButton = document.getElementById('search-button');
-            searchButton.disabled = true; // Disable the button
+            searchButton.disabled = true;
 
-            // Show loading GIFs while waiting for the API response
-            for (var a = 1; a <= 9; a++) {
-                const imageWrapper = document.createElement('div');
-                imageWrapper.classList.add('image');
-                const img = document.createElement('img');
-                img.src = "https://media.tenor.com/G7LfW0O5qb8AAAAi/loading-gif.gif";
-                imageWrapper.appendChild(img);
-                imageContainer1.appendChild(imageWrapper);
-            }
+            // Show a loading GIF while waiting for the image
+            const imageWrapper = document.createElement('div');
+            imageWrapper.classList.add('image');
+            const img = document.createElement('img');
+            img.src = "https://media.tenor.com/G7LfW0O5qb8AAAAi/loading-gif.gif";
+            imageWrapper.appendChild(img);
+            imageContainer.appendChild(imageWrapper);
 
-            const encodedPrompt = encodeURIComponent(prompt); // Encode the prompt
+            const encodedPrompt = encodeURIComponent(prompt);
 
             fetch(`https://image.pollinations.ai/prompt/${encodedPrompt}`)
-                .then(response => response.json())
-                .then(data => {
-                    const images = data.images.map(image => `${image}`);
-                    const imageContainer = document.getElementById('image-container');
-                    imageContainer.innerHTML = '';
-                    images.forEach(image => {
-                        console.log("image - " + image);
-                        const imageWrapper = document.createElement('div');
-                        imageWrapper.classList.add('image');
-                        const img = document.createElement('img');
-                        img.src = image;
-                        imageWrapper.appendChild(img);
-                        imageContainer.appendChild(imageWrapper);
-                    });
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.blob(); // Convert the response to a blob (image data)
+                })
+                .then(blob => {
+                    const imageURL = URL.createObjectURL(blob); // Create a URL for the image blob
+                    img.src = imageURL; // Set the image src to the generated image URL
                 })
                 .catch(error => {
-                    console.error(error);
-                    alert(error.toString());
+                    console.error('Error fetching image:', error);
+                    alert('Error generating image. Please try again.');
                 })
                 .finally(() => {
                     searchButton.disabled = false; // Enable the button again
