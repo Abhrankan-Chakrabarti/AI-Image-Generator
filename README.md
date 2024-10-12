@@ -16,7 +16,7 @@ You can view the live demo [here](https://abhrankan-chakrabarti.github.io/AI-Ima
 
 1. Enter a prompt in the input field on the website.
 2. Click the "Generate" button or press Enter.
-3. Wait for the images to load (this may take around a minute).
+3. Wait for the image to load (this may take around a minute).
 4. View and download the generated image.
 
 ## Installation
