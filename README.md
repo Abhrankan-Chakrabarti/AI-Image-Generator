@@ -4,7 +4,7 @@ This is a simple AI Image Generator that fetches a single high-quality image bas
 
 ## Features
 
-- Generates a high-quality image (1024x1024 pixels) based on the user's text prompt.
+- Generates a high-quality image (768x768 pixels) based on the user's text prompt.
 - Uses an external API to dynamically generate an image.
 - Displays a loading animation while the image is being generated.
 
