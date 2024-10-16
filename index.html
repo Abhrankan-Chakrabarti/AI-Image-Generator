@@ -1,13 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Image Generator</title>
     <style>
-        html {
+        html, body {
             height: 100%;
             width: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
         }
 
         #search-form {
@@ -16,15 +19,15 @@
         }
 
         #search-input {
-            padding: 5px;
-            font-size: 16px;
+            padding: 10px;
+            font-size: 18px;
             width: 300px;
             margin-right: 10px;
         }
 
         #search-button {
-            padding: 5px 10px;
-            font-size: 16px;
+            padding: 10px 20px;
+            font-size: 18px;
             background-color: #4CAF50;
             color: white;
             border: none;
@@ -39,7 +42,6 @@
         #image-container {
             margin: 20px;
             display: flex;
-            flex-wrap: wrap;
             justify-content: center;
         }
 
@@ -48,8 +50,8 @@
         }
 
         .image img {
-            width: 200px;
-            height: 200px;
+            width: 768px;
+            height: 768px;
             object-fit: cover;
         }
     </style>
@@ -58,21 +60,20 @@
 <body>
     <center>
         <h1>AI Image Generator</h1>
-        <p>The generator will take around one minute to generate an image.
-            <br>The images will be of high quality (1024x1024 pixels)</p>
+        <p>Generate a high-quality image (768x768 pixels) by entering a prompt below.</p>
     </center>
 
     <div id="search-form">
-        <input onkeydown="if (event.keyCode == 13) document.getElementById('search-button').click()" id="search-input"
-            type="text" placeholder="Enter a prompt...">
+        <input id="search-input" type="text" placeholder="Enter a prompt..." onkeydown="if(event.keyCode == 13) document.getElementById('search-button').click()">
         <button id="search-button" type="button" onclick="searchImages()">Generate</button>
     </div>
+
     <div id="image-container"></div>
 
     <script>
         function searchImages() {
             const imageContainer = document.getElementById('image-container');
-            imageContainer.innerHTML = '';
+            imageContainer.innerHTML = ''; // Clear previous images
 
             const prompt = document.getElementById('search-input').value.trim();
             if (!prompt) {
@@ -81,35 +82,37 @@
             }
 
             const searchButton = document.getElementById('search-button');
-            searchButton.disabled = true;
+            searchButton.disabled = true; // Disable button
 
-            // Show a loading GIF while waiting for the image
-            const imageWrapper = document.createElement('div');
-            imageWrapper.classList.add('image');
-            const img = document.createElement('img');
-            img.src = "https://media.tenor.com/G7LfW0O5qb8AAAAi/loading-gif.gif";
-            imageWrapper.appendChild(img);
-            imageContainer.appendChild(imageWrapper);
+            // Display a loading GIF while the image is generated
+            const loadingWrapper = document.createElement('div');
+            loadingWrapper.classList.add('image');
+            const loadingImg = document.createElement('img');
+            loadingImg.src = "https://media.tenor.com/G7LfW0O5qb8AAAAi/loading-gif.gif"; // Loading gif
+            loadingWrapper.appendChild(loadingImg);
+            imageContainer.appendChild(loadingWrapper);
 
             const encodedPrompt = encodeURIComponent(prompt);
 
+            // Fetch a single 768x768 image from the API
             fetch(`https://image.pollinations.ai/prompt/${encodedPrompt}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.blob(); // Convert the response to a blob (image data)
-                })
+                .then(response => response.blob())
                 .then(blob => {
-                    const imageURL = URL.createObjectURL(blob); // Create a URL for the image blob
-                    img.src = imageURL; // Set the image src to the generated image URL
+                    const imageUrl = URL.createObjectURL(blob);
+                    const imageWrapper = document.createElement('div');
+                    imageWrapper.classList.add('image');
+                    const img = document.createElement('img');
+                    img.src = imageUrl;
+                    imageWrapper.appendChild(img);
+                    imageContainer.innerHTML = ''; // Clear loading gif
+                    imageContainer.appendChild(imageWrapper);
                 })
                 .catch(error => {
-                    console.error('Error fetching image:', error);
-                    alert('Error generating image. Please try again.');
+                    console.error(error);
+                    alert('Error generating image: ' + error.message);
                 })
                 .finally(() => {
-                    searchButton.disabled = false; // Enable the button again
+                    searchButton.disabled = false; // Re-enable button
                 });
         }
     </script>
